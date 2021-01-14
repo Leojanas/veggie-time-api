@@ -2,6 +2,8 @@ const app = require('../src/app');
 const knex = require('knex');
 const supertest = require('supertest');
 const makeVeggiesArray = require('./veggies.fixtures');
+const makeUsersArray = require('./users.fixtures');
+const makeEventsArray = require('./events.fixtures');
 
 let db;
   
@@ -59,10 +61,56 @@ describe('allVeggies endpoints', () => {
 
 describe('events endpoints', () => {
   describe('GET /api/events', () => {
-    it('returns 200 and [] when database is empty', () => {
+    it('returns 400 when no user_id in request', () => {
       return supertest(app)
         .get('/api/events')
-        .expect(200, [])
+        .expect(400, {error: {message: 'Must provide a user_id.'}})
+    })
+    it('returns 400 when invalid user_id in request', () => {
+      return supertest(app)
+        .get('/api/events')
+        .send({user_id: 5})
+        .expect(400, {error: {message: 'Must provide a valid user_id.'}})
+    })
+    context('Given users and events in database', () => {
+      beforeEach('Seed users table', () => {
+        const usersArray = makeUsersArray();
+        return db.insert(usersArray).into('users')
+      })
+      beforeEach('Seed events table', () => {
+        const eventsArray = makeEventsArray();
+        return db.insert(eventsArray).into('events')
+      })
+      it('returns 200 and [] when user has no events', () => {
+        return supertest(app)
+          .get('/api/events')
+          .send({user_id:2})
+          .expect(200, [])
+      })
+      it('returns array of events for correct user', () => {
+        return supertest(app)
+          .get('/api/events')
+          .send({user_id: 1})
+          .expect(200, [
+            {
+              id: 1,
+              user_id: 1,
+              event_type: 'planting',
+              event_date: '2021-04-12T06:00:00.000Z',
+              completed: false,
+              notes: 'Radishes'
+            },
+            {
+              id: 3,
+              user_id: 1,
+              event_type: 'watering',
+              event_date: '2021-03-05T07:00:00.000Z',
+              completed: true,
+              notes: 'Entire Garden'
+            }
+          ])
+      })
     })
   })
+
 })

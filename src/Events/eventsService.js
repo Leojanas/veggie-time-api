@@ -1,6 +1,8 @@
 const eventsService = {
-    getAllEvents(knex) {
-        return knex('events').select('*')
+    getAllEvents(knex, user_id) {
+        return knex('events')
+            .select('*')
+            .where('user_id', user_id)
     },
 };
 
