@@ -1,7 +1,5 @@
 const app = require('../src/app');
 const knex = require('knex');
-const { expect } = require('chai');
-const supertest = require('supertest');
 
 let db;
   
