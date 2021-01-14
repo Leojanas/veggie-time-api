@@ -31,10 +31,27 @@ describe('allVeggies endpoints', () => {
       it('responds with 200 and an array of veggie names and ids', () => {
         return supertest(app)
           .get('/api/allVeggies')
-          .expect(200, [ 
-            { id: 1, veggie_name: 'Beets' }, 
-            { id: 2, veggie_name: 'Radishes' } 
-          ])
+          .expect(200, [
+            {
+              id: 1,
+              veggie_name: 'Beets',
+              row_spacing: 16,
+              plant_spacing: 4,
+              germination_days: 8,
+              thinning_days: 15,
+              harvest_days: 60
+            },
+            {
+              id: 2,
+              veggie_name: 'Radishes',
+              row_spacing: 8,
+              plant_spacing: 2,
+              germination_days: 5,
+              thinning_days: 10,
+              harvest_days: 45
+            }
+          ]
+          )
       })
     })
   })
