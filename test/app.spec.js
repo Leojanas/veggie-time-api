@@ -1,5 +1,7 @@
 const app = require('../src/app');
 const knex = require('knex');
+const supertest = require('supertest');
+const makeVeggiesArray = require('./veggies.fixtures');
 
 let db;
   
@@ -20,6 +22,20 @@ describe('allVeggies endpoints', () => {
       return supertest(app)
         .get('/api/allVeggies')
         .expect(200, [])
+    })
+    context('given veggies in database', () => {
+      beforeEach('Seed veggies table', () => {
+        let veggieArray = makeVeggiesArray();
+        return db.insert(veggieArray).into('veggies')
+      })
+      it('responds with 200 and an array of veggie names and ids', () => {
+        return supertest(app)
+          .get('/api/allVeggies')
+          .expect(200, [ 
+            { id: 1, veggie_name: 'Beets' }, 
+            { id: 2, veggie_name: 'Radishes' } 
+          ])
+      })
     })
   })
 
