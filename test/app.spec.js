@@ -55,5 +55,14 @@ describe('allVeggies endpoints', () => {
       })
     })
   })
+})
 
+describe('events endpoints', () => {
+  describe('GET /api/events', () => {
+    it('returns 200 and [] when database is empty', () => {
+      return supertest(app)
+        .get('/api/events')
+        .expect(200, [])
+    })
+  })
 })
