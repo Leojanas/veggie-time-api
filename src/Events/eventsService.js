@@ -4,6 +4,12 @@ const eventsService = {
             .select('*')
             .where('user_id', user_id)
     },
+    getEvent(knex, id){
+        return knex('events')
+            .select('*')
+            .where('id', id)
+            .first()
+    },
     getEventById(knex, id, user_id){
         return knex('events')
             .select('*')

@@ -61,16 +61,16 @@ describe('allVeggies endpoints', () => {
 
 describe('events endpoints', () => {
   describe('GET /api/events', () => {
-    it('returns 400 when no user_id in request', () => {
+    it('returns 401 when no user_id in request', () => {
       return supertest(app)
         .get('/api/events')
-        .expect(400, {error: {message: 'Must provide a user_id.'}})
+        .expect(401, {error: {message: 'Must provide a user_id.'}})
     })
-    it('returns 400 when invalid user_id in request', () => {
+    it('returns 401 when invalid user_id in request', () => {
       return supertest(app)
         .get('/api/events')
         .send({user_id: 5})
-        .expect(400, {error: {message: 'Must provide a valid user_id.'}})
+        .expect(401, {error: {message: 'Must provide a valid user_id.'}})
     })
     context('Given users and events in database', () => {
       beforeEach('Seed users table', () => {
@@ -116,11 +116,36 @@ describe('events endpoints', () => {
 })
 
 describe('events/:id endpoints', () => {
-  describe('PATCH /api/events/:id', () => {
-    beforeEach('Seed users table', () => {
-      const usersArray = makeUsersArray();
-      return db.insert(usersArray).into('users')
+  beforeEach('Seed users table', () => {
+    const usersArray = makeUsersArray();
+    return db.insert(usersArray).into('users')
+  })
+  it('returns 404 if id does not exist', () => {
+      return supertest(app)
+        .get('/api/events/25')
+        .send({user_id: 1})
+        .expect(404, {error: {message: 'Resource Not Found'}})
+  })
+  describe('GET /api/events/:id', () => {
+    beforeEach('Seed events table', () => {
+      const eventsArray = makeEventsArray();
+      return db.insert(eventsArray).into('events')
     })
+    it('returns the event if user_id matches', () => {
+      return supertest(app)
+        .get('/api/events/1')
+        .send({user_id: 1})
+        .expect(200, {
+          id: 1,
+          user_id: 1,
+          event_type: 'planting',
+          event_date: '2021-04-12T06:00:00.000Z',
+          completed: false,
+          notes: 'Radishes'
+        })
+    })
+  })
+  describe('PATCH /api/events/:id', () => {
     beforeEach('Seed events table', () => {
       const eventsArray = makeEventsArray();
       return db.insert(eventsArray).into('events')
