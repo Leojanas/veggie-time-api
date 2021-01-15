@@ -21,6 +21,11 @@ const eventsService = {
             .where('id', id)
             .update(body)
             .returning('*')
+    },
+    deleteEvent(knex, id){
+        return knex('events')
+            .where('id', id)
+            .delete()
     }
 };
 

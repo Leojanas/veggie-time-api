@@ -193,4 +193,22 @@ describe('events/:id endpoints', () => {
         })
     })
   })
+  describe('DELETE /api/events/:id', () => {
+    beforeEach('Seed events table', () => {
+      const eventsArray = makeEventsArray();
+      return db.insert(eventsArray).into('events')
+    })
+    it('should delete the event', () => {
+      return supertest(app)
+        .delete('/api/events/3')
+        .send({user_id: 1})
+        .expect(204)
+        .then(() => {
+          return supertest(app)
+            .get('/api/events/3')
+            .send({user_id: 1})
+            .expect(404, {error: {message: 'Resource Not Found'}})
+        })
+    })
+  })
 })

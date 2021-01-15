@@ -59,6 +59,10 @@ eventsRouter
             .then(event => res.status(200).json(event[0]))
             .catch(next)
     })
+    .delete((req,res,next) => {
+        eventsService.deleteEvent(req.app.get('db'), req.params.id)
+            .then(() => res.status(204).end())
+    })
     
 
 module.exports = eventsRouter;
