@@ -114,3 +114,58 @@ describe('events endpoints', () => {
   })
 
 })
+
+describe('events/:id endpoints', () => {
+  describe('PATCH /api/events/:id', () => {
+    beforeEach('Seed users table', () => {
+      const usersArray = makeUsersArray();
+      return db.insert(usersArray).into('users')
+    })
+    beforeEach('Seed events table', () => {
+      const eventsArray = makeEventsArray();
+      return db.insert(eventsArray).into('events')
+    })
+    it('returns 400 if no update sent', () => {
+      return supertest(app)
+        .patch('/api/events/1')
+        .send({user_id: 1})
+        .expect(400, { error: { message: 'Must update at least one field.' }})
+    })
+    it('returns 401 unathorized if user_id is incorrect', () => {
+      return supertest(app)
+        .patch('/api/events/1')
+        .send({user_id: 2})
+        .expect(401, {error: {message: 'Unauthorized request'}})
+    })
+    it('updates the event if request is valid', () => {
+      return supertest(app)
+        .patch('/api/events/1')
+        .send({user_id: 1, completed: true})
+        .expect(200, 
+          {
+            id: 1,
+            user_id: 1,
+            event_type: 'planting',
+            event_date: '2021-04-12T06:00:00.000Z',
+            completed: true,
+            notes: 'Radishes'
+          }
+        )
+        .then(() => {
+          return supertest(app)
+            .get('/api/events/1')
+            .send({user_id: 1})
+            .expect(200, 
+              {
+                id: 1,
+                user_id: 1,
+                event_type: 'planting',
+                event_date: '2021-04-12T06:00:00.000Z',
+                completed: true,
+                notes: 'Radishes'
+              }
+            )
+        })
+    })
+  })
+})
