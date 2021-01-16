@@ -16,6 +16,12 @@ const eventsService = {
             .where({'id': id, 'user_id': user_id})
             .first()
     },
+    insertEvent(knex, body){
+        return knex
+            .insert(body)
+            .into('events')
+            .returning('*')
+    },
     updateEvent(knex, id, body){
         return knex('events')
             .where('id', id)

@@ -112,7 +112,40 @@ describe('events endpoints', () => {
       })
     })
   })
-
+  describe('POST /api/events', () => {
+    context('given a valid user_id', () => {
+      beforeEach('Seed users table', () => {
+        const usersArray = makeUsersArray();
+        return db.insert(usersArray).into('users')
+      })
+      it('should return 400 if field(s) missing', () => {
+        return supertest(app)
+          .post('/api/events')
+          .send({user_id: 1, event_type: 'watering'})
+          .expect(400, {error: {message: 'One or more event attributes missing or invalid'}})
+      })
+      it('should return 400 for invalid event_type', () => {
+        return supertest(app)
+        .post('/api/events')
+        .send({user_id: 1, event_type: 'Invalid type', event_date: '2021-04-20', completed: false, notes: 'Whole Garden'})
+        .expect(400, {error: {message: 'One or more event attributes missing or invalid'}})
+      })
+      it('should post the event and return 200 if valid', () => {
+        return supertest(app)
+          .post('/api/events')
+          .send({user_id: 1, event_type: 'weeding', event_date: '2021-04-20', completed: false, notes: 'Whole Garden'})
+          .expect(201, {
+            id: 1,
+            user_id: 1,
+            event_type: 'weeding',
+            event_date: '2021-04-20T06:00:00.000Z',
+            completed: false,
+            notes: 'Whole Garden'
+          }
+          )
+      })
+    })
+  })
 })
 
 describe('events/:id endpoints', () => {

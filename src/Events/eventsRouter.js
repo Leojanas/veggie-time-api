@@ -25,10 +25,23 @@ eventsRouter
     .route('/')
     .get((req,res,next) => {
         let {user_id} = req.body;
-        eventsService.getAllEvents(req.app.get('db'),user_id)
+        eventsService.getAllEvents(req.app.get('db'), user_id)
             .then(events => {
                 return res.status(200).json(events)
             })
+            .catch(next)
+    })
+    .post(jsonParser, (req,res,next) => {
+        let {event_type, event_date, completed, notes} = req.body;
+        let types = ['planting', 'thinning', 'watering', 'weeding', 'harvesting']
+        if(!event_type || !event_date || !notes){
+            return res.status(400).json({error: {message: 'One or more event attributes missing or invalid'}})
+        }
+        if(!types.includes(event_type)){
+            return res.status(400).json({error: {message: 'One or more event attributes missing or invalid'}})
+        }
+        eventsService.insertEvent(req.app.get('db'), req.body)
+            .then(event => res.status(201).json(event[0]))
             .catch(next)
     })
 
