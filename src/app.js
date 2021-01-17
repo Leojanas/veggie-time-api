@@ -5,7 +5,8 @@ const cors = require('cors');
 const helmet = require('helmet');
 const {NODE_ENV} = require('./config');
 const allVeggiesRouter = require('./AllVeggies/all-veggies-router');
-const eventsRouter = require('./Events/eventsRouter');
+const eventsRouter = require('./Events/events-router');
+const gardenRouter = require('./Garden/garden-router');
 
 const app = express();
 
@@ -18,7 +19,8 @@ app.use(helmet());
 app.use(cors());
 
 app.use('/api/allVeggies', allVeggiesRouter);
-app.use('/api/events', eventsRouter)
+app.use('/api/events', eventsRouter);
+app.use('/api/garden', gardenRouter);
 
 app.get('/', (req,res)=>{
     res.send('Hello, world!')

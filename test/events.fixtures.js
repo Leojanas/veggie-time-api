@@ -1,5 +1,3 @@
-const makeVeggiesArray = require("./veggies.fixtures")
-
 function makeEventsArray() {
     return [
         {

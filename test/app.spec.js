@@ -4,6 +4,7 @@ const supertest = require('supertest');
 const makeVeggiesArray = require('./veggies.fixtures');
 const makeUsersArray = require('./users.fixtures');
 const makeEventsArray = require('./events.fixtures');
+const makeGardenArray = require('./garden.fixtures');
 
 let db;
   
@@ -141,8 +142,20 @@ describe('events endpoints', () => {
             event_date: '2021-04-20T06:00:00.000Z',
             completed: false,
             notes: 'Whole Garden'
-          }
-          )
+          })
+      })
+      it('should mark completed as false if not given', () => {
+        return supertest(app)
+          .post('/api/events')
+          .send({user_id: 1, event_type: 'weeding', event_date: '2021-04-20', notes: 'Whole Garden'})
+          .expect(201, {
+            id: 1,
+            user_id: 1,
+            event_type: 'weeding',
+            event_date: '2021-04-20T06:00:00.000Z',
+            completed: false,
+            notes: 'Whole Garden'
+          })
       })
     })
   })

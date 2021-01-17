@@ -1,8 +1,7 @@
 const express = require('express');
 const eventsRouter = express.Router();
-const eventsService = require('./eventsService');
+const eventsService = require('./events-service');
 const usersService = require('../Users/usersService');
-const { json } = require('express');
 const jsonParser = express.json();
 
 eventsRouter
