@@ -31,7 +31,7 @@ describe('allVeggies endpoints', () => {
         let veggieArray = makeVeggiesArray();
         return db.insert(veggieArray).into('veggies')
       })
-      it('responds with 200 and an array of veggie names and ids', () => {
+      it('responds with 200 and an array of veggies', () => {
         return supertest(app)
           .get('/api/allVeggies')
           .expect(200, [
@@ -260,20 +260,20 @@ describe('events/:id endpoints', () => {
 })
 
 describe('garden endpoints', () => {
+  beforeEach('Seed veggies table', () => {
+    let veggieArray = makeVeggiesArray();
+    return db.insert(veggieArray).into('veggies')
+  })
+  beforeEach('Seed users table', () => {
+    const usersArray = makeUsersArray();
+    return db.insert(usersArray).into('users')
+  })
   describe('GET /api/garden', () => {
-    beforeEach('Seed veggies table', () => {
-      let veggieArray = makeVeggiesArray();
-      return db.insert(veggieArray).into('veggies')
-    })
-    beforeEach('Seed users table', () => {
-      const usersArray = makeUsersArray();
-      return db.insert(usersArray).into('users')
-    })
     beforeEach('Seed garden table', () => {
       const gardenArray = makeGardenArray();
       return db.insert(gardenArray).into('garden')
     })
-    it('should return all garden veggies give na valid user_id', () => {
+    it('should return all garden veggies given a valid user_id', () => {
       return supertest(app)
         .get('/api/garden')
         .send({user_id: 1})
@@ -295,6 +295,23 @@ describe('garden endpoints', () => {
             id: 3
           }
         ])
+    })
+  })
+  describe('POST /api/garden', () => {
+    beforeEach('Seed garden table', () => {
+      const gardenArray = makeGardenArray();
+      return db.insert(gardenArray).into('garden')
+    })
+    it('should add veggie to garden for valid request', () => {
+      return supertest(app)
+        .post('/api/garden')
+        .send({user_id: 2, veggie_id: 1, plant_date: '2021-04-12'})
+        .expect(201, {
+          id: 4,
+          user_id: 2,
+          veggie_id: 1,
+          plant_date: '2021-04-12T06:00:00.000Z'
+        })
     })
   })
 })
