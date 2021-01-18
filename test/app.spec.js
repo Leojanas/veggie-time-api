@@ -258,3 +258,43 @@ describe('events/:id endpoints', () => {
     })
   })
 })
+
+describe('garden endpoints', () => {
+  describe('GET /api/garden', () => {
+    beforeEach('Seed veggies table', () => {
+      let veggieArray = makeVeggiesArray();
+      return db.insert(veggieArray).into('veggies')
+    })
+    beforeEach('Seed users table', () => {
+      const usersArray = makeUsersArray();
+      return db.insert(usersArray).into('users')
+    })
+    beforeEach('Seed garden table', () => {
+      const gardenArray = makeGardenArray();
+      return db.insert(gardenArray).into('garden')
+    })
+    it('should return all garden veggies give na valid user_id', () => {
+      return supertest(app)
+        .get('/api/garden')
+        .send({user_id: 1})
+        .expect(200, [
+          {
+            veggie_name: 'Beets',
+            germination_days: 8,
+            thinning_days: 15,
+            harvest_days: 60,
+            plant_date: '2021-03-18T06:00:00.000Z',
+            id: 1
+          },
+          {
+            veggie_name: 'Radishes',
+            germination_days: 5,
+            thinning_days: 10,
+            harvest_days: 45,
+            plant_date: null,
+            id: 3
+          }
+        ])
+    })
+  })
+})

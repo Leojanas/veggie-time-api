@@ -1,6 +1,7 @@
 const express = require('express');
 const gardenRouter = express.Router();
 const gardenService = require('./garden-service');
+const usersService = require('../Users/usersService');
 const jsonParser = express.json();
 
 gardenRouter
@@ -22,6 +23,7 @@ gardenRouter
 gardenRouter
     .route('/')
     .get((req,res,next) => {
+        console.log('called get')
         let {user_id} = req.body;
         gardenService.getGarden(req.app.get('db'), user_id)
             .then(garden => res.status(200).json(garden))

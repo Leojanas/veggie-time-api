@@ -4,7 +4,8 @@ const gardenService = {
     getGarden(knex, user_id){
         return knex('garden')
             .join('veggies', 'garden.veggie_id', '=', 'veggies.id')
-            .select('')
+            .where('garden.user_id', user_id)
+            .select('veggies.veggie_name', 'veggies.germination_days', 'veggies.thinning_days', 'veggies.harvest_days', 'garden.plant_date', 'garden.id')
     }
 }
 

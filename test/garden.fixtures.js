@@ -3,7 +3,7 @@ function makeGardenArray() {
         {
             user_id: 1,
             veggie_id: 1,
-            plantDate: '2021-03-18'
+            plant_date: '2021-03-18'
         },
         {
             user_id: 2,
