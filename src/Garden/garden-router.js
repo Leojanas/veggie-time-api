@@ -37,5 +37,14 @@ gardenRouter
             .then(veggies => res.status(201).json(veggies[0]))
     })
 
+gardenRouter
+    .route('/:id')
+    .patch(jsonParser, (req,res,next) => {
+        console.log('inside patch')
+        let {plant_date} = req.body;
+        gardenService.updateVeggie(req.app.get('db'), req.params.id, plant_date)
+            .then(() => res.status(204).end())
+    })
+
 
 module.exports = gardenRouter;

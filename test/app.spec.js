@@ -314,4 +314,39 @@ describe('garden endpoints', () => {
         })
     })
   })
+  describe('PATCH /api/garden/:id', () => {
+    beforeEach('Seed garden table', () => {
+      const gardenArray = makeGardenArray();
+      return db.insert(gardenArray).into('garden')
+    })
+    it('should update the veggie and return 204', () => {
+      return supertest(app)
+        .patch('/api/garden/3')
+        .send({user_id: 1, plant_date: '2021-03-21'})
+        .expect(204)
+        .then(() => {
+          return supertest(app)
+            .get('/api/garden')
+            .send({user_id: 1})
+            .expect(200, [
+              {
+                veggie_name: 'Beets',
+                germination_days: 8,
+                thinning_days: 15,
+                harvest_days: 60,
+                plant_date: '2021-03-18T06:00:00.000Z',
+                id: 1
+              },
+              {
+                veggie_name: 'Radishes',
+                germination_days: 5,
+                thinning_days: 10,
+                harvest_days: 45,
+                plant_date: '2021-03-21T06:00:00.000Z',
+                id: 3
+              }
+            ])
+        })
+    })
+  })
 })

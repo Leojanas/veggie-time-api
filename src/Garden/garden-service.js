@@ -12,6 +12,11 @@ const gardenService = {
             .insert(veggie)
             .into('garden')
             .returning('*')
+    },
+    updateVeggie(knex, id, plant_date){
+        return knex('garden')
+            .where('id', id)
+            .update('plant_date', plant_date)
     }
 }
 
