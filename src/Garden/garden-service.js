@@ -7,6 +7,11 @@ const gardenService = {
             .where('garden.user_id', user_id)
             .select('veggies.veggie_name', 'veggies.germination_days', 'veggies.thinning_days', 'veggies.harvest_days', 'garden.plant_date', 'garden.id')
     },
+    getVeggieById(knex, id){
+        return knex('garden')
+            .select('*')
+            .where('id', id)
+    },
     addVeggie(knex, veggie){
         return knex
             .insert(veggie)
@@ -17,6 +22,11 @@ const gardenService = {
         return knex('garden')
             .where('id', id)
             .update('plant_date', plant_date)
+    },
+    deleteVeggie(knex, id){
+        return knex('garden')
+            .where('id', id)
+            .delete()
     }
 }
 

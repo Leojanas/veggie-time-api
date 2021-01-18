@@ -39,11 +39,25 @@ gardenRouter
 
 gardenRouter
     .route('/:id')
+    .all((req,res,next) => {
+        gardenService.getVeggieById(req.app.get('db'), req.params.id)
+            .then(veggie => {
+                if(!veggie){
+                    return res.status(404).json({error: {message: 'Resource Not Found'}})
+                }
+                else{
+                    next()
+                }
+            })
+    })
     .patch(jsonParser, (req,res,next) => {
-        console.log('inside patch')
         let {plant_date} = req.body;
         gardenService.updateVeggie(req.app.get('db'), req.params.id, plant_date)
             .then(() => res.status(204).end())
+    })
+    .delete((req,res,next) => {
+        gardenService.deleteVeggie(req.app.get('db'), req.params.id)
+        .then(() => res.status(204).end())
     })
 
 
