@@ -58,6 +58,54 @@ describe('allVeggies endpoints', () => {
       })
     })
   })
+  describe('POST /api/allVeggies', () => {
+    it('responds 400 if not all required info is given', () => {
+      return supertest(app)
+        .post('/api/allVeggies')
+        .send({
+            row_spacing: 8,
+            plant_spacing: 2,
+            germination_days: 5,
+            thinning_days: 10,
+            harvest_days: 45
+        })
+        .expect(400, { error: { message: 'At least one required field is missing.' } })
+    })
+    it('adds veggie and responds 201 for valid request', () => {
+      return supertest(app)
+        .post('/api/allVeggies')
+        .send({
+          veggie_name: 'Radishes',
+          row_spacing: 8,
+          plant_spacing: 2,
+          germination_days: 5,
+          thinning_days: 10,
+          harvest_days: 45
+      })
+      .expect(201, {
+        id: 1,
+        veggie_name: 'Radishes',
+        row_spacing: 8,
+        plant_spacing: 2,
+        germination_days: 5,
+        thinning_days: 10,
+        harvest_days: 45
+    })
+      .then(() => {
+        return supertest(app)
+          .get('/api/allVeggies')
+          .expect(200, [{
+              id: 1,
+              veggie_name: 'Radishes',
+              row_spacing: 8,
+              plant_spacing: 2,
+              germination_days: 5,
+              thinning_days: 10,
+              harvest_days: 45
+          }])
+      })
+    })
+  })
 })
 
 describe('events endpoints', () => {
