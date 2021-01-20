@@ -22,9 +22,6 @@ app.use('/api/allVeggies', allVeggiesRouter);
 app.use('/api/events', eventsRouter);
 app.use('/api/garden', gardenRouter);
 
-app.get('/', (req,res)=>{
-    res.send('Hello, world!')
-})
 
 app.use(function errorHandler(error, req, res, next) {
    let response
