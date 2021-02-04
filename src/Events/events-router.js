@@ -2,7 +2,10 @@ const express = require('express');
 const eventsRouter = express.Router();
 const eventsService = require('./events-service');
 const usersService = require('../Users/usersService');
+const authenticationRouter = require('../Authentication/authentication-router');
 const jsonParser = express.json();
+
+eventsRouter.use(authenticationRouter);
 
 eventsRouter
     .use(jsonParser, (req,res,next) => {

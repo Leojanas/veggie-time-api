@@ -108,6 +108,50 @@ describe('allVeggies endpoints', () => {
   })
 })
 
+describe.only('auth endpoints', () => {
+  describe('POST /api/auth/login', () => {
+    beforeEach('Seed users table', () => {
+      const usersArray = makeUsersArray()
+      return db.insert(usersArray).into('users')
+      
+    })
+    it('returns 400 if no username is given', () => {
+      db('users').select('*')
+      .then(users =>  console.log(users))
+      return supertest(app)
+        .post('/api/auth/login')
+        .send({password: 'password'})
+        .expect(400, { error: { message: 'Must provide username and password' } }
+        )
+    })
+    it('returns 400 if no password is given', () => {
+      return supertest(app)
+        .post('/api/auth/login')
+        .send({username: 'username'})
+        .expect(400, { error: { message: 'Must provide username and password' } }
+        )
+    })
+    it('returns 401 for an incorrect username', () => {
+      return supertest(app)
+        .post('/api/auth/login')
+        .send({username: 'invalidUser', password: 'password'})
+        .expect(401, {error: { message: 'Invalid username' } })
+    })
+    it('returns 401 for an incorrect password of a valid user', () => {
+      return supertest(app)
+        .post('/api/auth/login')
+        .send({username: 'tim1', password: 'invalidPassword'})
+        .expect(401,  { error: { message: 'Invalid password' } })
+    })
+    it('returns 200 for valid username password combo', () => {
+      return supertest(app)
+        .post('/api/auth/login')
+        .send({username: 'tim1', password: 'TimPassword'})
+        .expect(200, { jwt: 'this should be a jwt' })
+    })
+  })
+})
+
 describe('events endpoints', () => {
   describe('GET /api/events', () => {
     it('returns 401 when no user_id in request', () => {

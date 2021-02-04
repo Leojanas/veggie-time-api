@@ -7,6 +7,7 @@ const {NODE_ENV} = require('./config');
 const allVeggiesRouter = require('./AllVeggies/all-veggies-router');
 const eventsRouter = require('./Events/events-router');
 const gardenRouter = require('./Garden/garden-router');
+const authenticationRouter = require('./Authentication/authentication-router');
 
 const app = express();
 
@@ -21,6 +22,8 @@ app.use(cors());
 app.use('/api/allVeggies', allVeggiesRouter);
 app.use('/api/events', eventsRouter);
 app.use('/api/garden', gardenRouter);
+app.use('/api/auth', authenticationRouter);
+
 
 
 app.use(function errorHandler(error, req, res, next) {
