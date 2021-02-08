@@ -28,7 +28,7 @@
     "helmet": "^4.2.0",
     "knex": "^0.21.15",
     "morgan": "^1.10.0",
-    "pg": "^6.4.2",
+    "pg": "^7.18.2",
     "postgrator-cli": "^4.0.0"
   },
   "devDependencies": {
