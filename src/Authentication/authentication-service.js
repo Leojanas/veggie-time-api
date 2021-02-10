@@ -1,3 +1,7 @@
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const config = require('../config');
+
 AuthenticationService = {
     checkUsername(knex, username){
         return knex('users')
@@ -10,6 +14,9 @@ AuthenticationService = {
             .select('password')
             .where('id', id)
             .first()
+    },
+    createJwt(subject, payload){
+        return jwt.sign(payload, config.JWT_SECRET, {subject: subject, algorithm: 'HS256'})
     }
 }
 

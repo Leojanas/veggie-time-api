@@ -1,5 +1,6 @@
 const app = require('../src/app');
 const knex = require('knex');
+const jwt = require('jsonwebtoken');
 const supertest = require('supertest');
 const makeVeggiesArray = require('./veggies.fixtures');
 const makeUsersArray = require('./users.fixtures');
@@ -143,11 +144,13 @@ describe.only('auth endpoints', () => {
         .send({username: 'tim1', password: 'invalidPassword'})
         .expect(401,  { error: { message: 'Invalid password' } })
     })
-    it('returns 200 for valid username password combo', () => {
+    it('returns 200 and jwt for valid username password combo', () => {
+      let expectedToken = jwt.sign(
+        {user_id: 1},process.env.JWT_SECRET,{subject: 'tim1', algorithm: 'HS256'});
       return supertest(app)
         .post('/api/auth/login')
         .send({username: 'tim1', password: 'TimPassword'})
-        .expect(200, { jwt: 'this should be a jwt' })
+        .expect(200, { authToken: expectedToken })
     })
   })
 })

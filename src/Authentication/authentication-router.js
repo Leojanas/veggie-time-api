@@ -11,8 +11,6 @@ authenticationRouter
         if(!username || !password){
             return res.status(400).json({error: {message: 'Must provide username and password'}})
         }
-        console.log(username)
-        console.log(password)
         AuthenticationService.checkUsername(req.app.get('db'), username)
             .then(user => {
                 if(!user){
@@ -20,13 +18,11 @@ authenticationRouter
                 }
                 AuthenticationService.getUserPassword(req.app.get('db'), user.id)
                     .then(db_password => {
-                        console.log(db_password.password)
-                        console.log(password)
                         let authorized = bcrpyt.compareSync(password, db_password.password);
                         if(!authorized){
                             return res.status(401).json({error: {message: 'Invalid password'}})
                         }
-                        return res.status(200).json({jwt: 'this should be a jwt'})
+                        return res.status(200).json({authToken: AuthenticationService.createJwt(username, {user_id: user.id})})
                     })
             })
             .catch(next)
