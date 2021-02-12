@@ -6,6 +6,7 @@ const makeVeggiesArray = require('./veggies.fixtures');
 const makeUsersArray = require('./users.fixtures');
 const makeEventsArray = require('./events.fixtures');
 const makeGardenArray = require('./garden.fixtures');
+const jwtArray = require('./jwt.fixtures');
 
 let db;
   
@@ -109,7 +110,7 @@ describe('allVeggies endpoints', () => {
   })
 })
 
-describe.only('auth endpoints', () => {
+describe('auth endpoints', () => {
   describe('POST /api/auth/login', () => {
     beforeEach('Seed users table', () => {
       const usersArray = makeUsersArray()
@@ -117,8 +118,6 @@ describe.only('auth endpoints', () => {
       
     })
     it('returns 400 if no username is given', () => {
-      db('users').select('*')
-      .then(users =>  console.log(users))
       return supertest(app)
         .post('/api/auth/login')
         .send({password: 'password'})
@@ -146,7 +145,7 @@ describe.only('auth endpoints', () => {
     })
     it('returns 200 and jwt for valid username password combo', () => {
       let expectedToken = jwt.sign(
-        {user_id: 1},process.env.JWT_SECRET,{subject: 'tim1', algorithm: 'HS256'});
+        {user_id: 1}, process.env.JWT_SECRET, {subject: 'tim1', algorithm: 'HS256'});
       return supertest(app)
         .post('/api/auth/login')
         .send({username: 'tim1', password: 'TimPassword'})
@@ -157,16 +156,16 @@ describe.only('auth endpoints', () => {
 
 describe('events endpoints', () => {
   describe('GET /api/events', () => {
-    it('returns 401 when no user_id in request', () => {
+    it('returns 401 when no auth token in request', () => {
       return supertest(app)
         .get('/api/events')
-        .expect(401, {error: {message: 'Must provide a user_id.'}})
+        .expect(401, {error: {message: 'Missing bearer token.'}})
     })
-    it('returns 401 when invalid user_id in request', () => {
+    it('returns 401 when invalid auth token in request', () => {
       return supertest(app)
         .get('/api/events')
-        .send({user_id: 5})
-        .expect(401, {error: {message: 'Must provide a valid user_id.'}})
+        .set('Authorization', 'bearer 12345')
+        .expect(401, {error: {message: 'Unauthorized request.'}})
     })
     context('Given users and events in database', () => {
       beforeEach('Seed users table', () => {
@@ -180,13 +179,13 @@ describe('events endpoints', () => {
       it('returns 200 and [] when user has no events', () => {
         return supertest(app)
           .get('/api/events')
-          .send({user_id:2})
+          .set('Authorization', 'Bearer ' + jwtArray[0])
           .expect(200, [])
       })
       it('returns array of events for correct user', () => {
         return supertest(app)
           .get('/api/events')
-          .send({user_id: 1})
+          .set('Authorization', 'Bearer ' + jwtArray[1])
           .expect(200, [
             {
               id: 1,
@@ -209,7 +208,7 @@ describe('events endpoints', () => {
     })
   })
   describe('POST /api/events', () => {
-    context('given a valid user_id', () => {
+    context('given a valid jwt token', () => {
       beforeEach('Seed users table', () => {
         const usersArray = makeUsersArray();
         return db.insert(usersArray).into('users')
@@ -217,19 +216,22 @@ describe('events endpoints', () => {
       it('should return 400 if field(s) missing', () => {
         return supertest(app)
           .post('/api/events')
-          .send({user_id: 1, event_type: 'watering'})
+          .set('Authorization', 'Bearer '+ jwtArray[1])
+          .send({event_type: 'watering'})
           .expect(400, {error: {message: 'One or more event attributes missing or invalid'}})
       })
       it('should return 400 for invalid event_type', () => {
         return supertest(app)
         .post('/api/events')
-        .send({user_id: 1, event_type: 'Invalid type', event_date: '2021-04-20', completed: false, notes: 'Whole Garden'})
+        .set('Authorization', 'Bearer '+ jwtArray[1])
+        .send({event_type: 'Invalid type', event_date: '2021-04-20', completed: false, notes: 'Whole Garden'})
         .expect(400, {error: {message: 'One or more event attributes missing or invalid'}})
       })
       it('should post the event and return 200 if valid', () => {
         return supertest(app)
           .post('/api/events')
-          .send({user_id: 1, event_type: 'weeding', event_date: '2021-04-20', completed: false, notes: 'Whole Garden'})
+          .set('Authorization', 'Bearer '+ jwtArray[1])
+          .send({event_type: 'weeding', event_date: '2021-04-20', completed: false, notes: 'Whole Garden'})
           .expect(201, {
             id: 1,
             user_id: 1,
@@ -242,7 +244,8 @@ describe('events endpoints', () => {
       it('should mark completed as false if not given', () => {
         return supertest(app)
           .post('/api/events')
-          .send({user_id: 1, event_type: 'weeding', event_date: '2021-04-20', notes: 'Whole Garden'})
+          .set('Authorization', 'Bearer '+ jwtArray[1])
+          .send({event_type: 'weeding', event_date: '2021-04-20', notes: 'Whole Garden'})
           .expect(201, {
             id: 1,
             user_id: 1,
@@ -264,7 +267,7 @@ describe('events/:id endpoints', () => {
   it('returns 404 if id does not exist', () => {
       return supertest(app)
         .get('/api/events/25')
-        .send({user_id: 1})
+        .set('Authorization', 'Bearer '+ jwtArray[1])
         .expect(404, {error: {message: 'Resource Not Found'}})
   })
   describe('GET /api/events/:id', () => {
@@ -275,7 +278,7 @@ describe('events/:id endpoints', () => {
     it('returns the event if user_id matches', () => {
       return supertest(app)
         .get('/api/events/1')
-        .send({user_id: 1})
+        .set('Authorization', 'Bearer '+ jwtArray[1])
         .expect(200, {
           id: 1,
           user_id: 1,
@@ -284,6 +287,12 @@ describe('events/:id endpoints', () => {
           completed: false,
           notes: 'Radishes'
         })
+    })
+    it('returns 401 unauthorized for jwt of other user', () => {
+      return supertest(app)
+        .get('/api/events/1')
+        .set('Authorization', 'Bearer '+ jwtArray[0])
+        .expect(401, {error: {message: 'Unauthorized request.'}})
     })
   })
   describe('PATCH /api/events/:id', () => {
@@ -294,19 +303,20 @@ describe('events/:id endpoints', () => {
     it('returns 400 if no update sent', () => {
       return supertest(app)
         .patch('/api/events/1')
-        .send({user_id: 1})
+        .set('Authorization', 'Bearer '+ jwtArray[1])
         .expect(400, { error: { message: 'Must update at least one field.' }})
     })
-    it('returns 401 unathorized if user_id is incorrect', () => {
+    it('returns 401 unathorized if jwt is for incorrect user', () => {
       return supertest(app)
         .patch('/api/events/1')
-        .send({user_id: 2})
-        .expect(401, {error: {message: 'Unauthorized request'}})
+        .set('Authorization', 'Bearer '+ jwtArray[2]) 
+        .expect(401, {error: {message: 'Unauthorized request.'}})
     })
     it('updates the event if request is valid', () => {
       return supertest(app)
         .patch('/api/events/1')
-        .send({user_id: 1, completed: true})
+        .set('Authorization', 'Bearer '+ jwtArray[1]) 
+        .send({completed: true})
         .expect(200, 
           {
             id: 1,
@@ -320,7 +330,7 @@ describe('events/:id endpoints', () => {
         .then(() => {
           return supertest(app)
             .get('/api/events/1')
-            .send({user_id: 1})
+            .set('Authorization', 'Bearer '+ jwtArray[1]) 
             .expect(200, 
               {
                 id: 1,
@@ -342,12 +352,12 @@ describe('events/:id endpoints', () => {
     it('should delete the event', () => {
       return supertest(app)
         .delete('/api/events/3')
-        .send({user_id: 1})
+        .set('Authorization', 'Bearer '+ jwtArray[1]) 
         .expect(204)
         .then(() => {
           return supertest(app)
             .get('/api/events/3')
-            .send({user_id: 1})
+            .set('Authorization', 'Bearer '+ jwtArray[1]) 
             .expect(404, {error: {message: 'Resource Not Found'}})
         })
     })
