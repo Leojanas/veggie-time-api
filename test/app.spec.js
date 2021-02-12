@@ -381,7 +381,7 @@ describe('garden endpoints', () => {
     it('should return all garden veggies given a valid user_id', () => {
       return supertest(app)
         .get('/api/garden')
-        .send({user_id: 1})
+        .set('Authorization', 'Bearer '+ jwtArray[1]) 
         .expect(200, [
           {
             veggie_name: 'Beets',
@@ -410,7 +410,8 @@ describe('garden endpoints', () => {
     it('should add veggie to garden for valid request', () => {
       return supertest(app)
         .post('/api/garden')
-        .send({user_id: 2, veggie_id: 1, plant_date: '2021-04-12'})
+        .set('Authorization', 'Bearer '+ jwtArray[2]) 
+        .send({veggie_id: 1, plant_date: '2021-04-12'})
         .expect(201, {
           id: 4,
           user_id: 2,
@@ -425,15 +426,23 @@ describe('garden endpoints', () => {
       return db.insert(gardenArray).into('garden')
     })
     describe('PATCH /api/garden/:id', () => {
+      it('should return 401 if the wrong user makes request', () => {
+        return supertest(app)
+          .patch('/api/garden/3')
+          .set('Authorization', 'Bearer '+ jwtArray[2]) 
+          .send({plant_date: '2021-03-21'})
+          .expect(401, {error: {message: 'Unauthorized request.'}})
+      })
       it('should update the veggie and return 204', () => {
         return supertest(app)
           .patch('/api/garden/3')
-          .send({user_id: 1, plant_date: '2021-03-21'})
+          .set('Authorization', 'Bearer '+ jwtArray[1]) 
+          .send({plant_date: '2021-03-21'})
           .expect(204)
           .then(() => {
             return supertest(app)
               .get('/api/garden')
-              .send({user_id: 1})
+              .set('Authorization', 'Bearer '+ jwtArray[1]) 
               .expect(200, [
                 {
                   veggie_name: 'Beets',
@@ -456,15 +465,21 @@ describe('garden endpoints', () => {
       })
     })
     describe('DELETE /api/garden/:id', () => {
+      it('should return 401 if the wrong user makes request', () => {
+        return supertest(app)
+        .delete('/api/garden/3')
+        .set('Authorization', 'Bearer '+ jwtArray[2]) 
+        .expect(401, {error: {message: 'Unauthorized request.'}})
+      })
       it('should delete the resource and return 204', () => {
         return supertest(app)
           .delete('/api/garden/3')
-          .send({user_id: 1})
+          .set('Authorization', 'Bearer '+ jwtArray[1]) 
           .expect(204)
           .then(() => {
             return supertest(app)
               .get('/api/garden')
-              .send({user_id: 1})
+              .set('Authorization', 'Bearer '+ jwtArray[1]) 
               .expect(200, [
                 {
                   veggie_name: 'Beets',

@@ -11,6 +11,7 @@ const gardenService = {
         return knex('garden')
             .select('*')
             .where('id', id)
+            .first()
     },
     addVeggie(knex, veggie){
         return knex
