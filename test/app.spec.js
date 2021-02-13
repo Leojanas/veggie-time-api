@@ -114,34 +114,33 @@ describe('auth endpoints', () => {
   describe('POST /api/auth/login', () => {
     beforeEach('Seed users table', () => {
       const usersArray = makeUsersArray()
-      return db.insert(usersArray).into('users')
-      
+      return db.insert(usersArray).into('users') 
     })
     it('returns 400 if no username is given', () => {
       return supertest(app)
         .post('/api/auth/login')
         .send({password: 'password'})
-        .expect(400, { error: { message: 'Must provide username and password' } }
+        .expect(400, { error: { message: 'Invalid submission.' } }
         )
     })
     it('returns 400 if no password is given', () => {
       return supertest(app)
         .post('/api/auth/login')
         .send({username: 'username'})
-        .expect(400, { error: { message: 'Must provide username and password' } }
+        .expect(400, { error: { message: 'Invalid submission.' } }
         )
     })
     it('returns 401 for an incorrect username', () => {
       return supertest(app)
         .post('/api/auth/login')
         .send({username: 'invalidUser', password: 'password'})
-        .expect(401, {error: { message: 'Invalid username' } })
+        .expect(401, {error: { message: 'Invalid username/password combination.' } })
     })
     it('returns 401 for an incorrect password of a valid user', () => {
       return supertest(app)
         .post('/api/auth/login')
         .send({username: 'tim1', password: 'invalidPassword'})
-        .expect(401,  { error: { message: 'Invalid password' } })
+        .expect(401,  { error: { message: 'Invalid username/password combination.' } })
     })
     it('returns 200 and jwt for valid username password combo', () => {
       let expectedToken = jwt.sign(
@@ -151,6 +150,42 @@ describe('auth endpoints', () => {
         .send({username: 'tim1', password: 'TimPassword'})
         .expect(200, { authToken: expectedToken })
     })
+  })
+  describe('POST /api/auth/signup', () => {
+    it('returns 400 if no username is given', () => {
+      return supertest(app)
+        .post('/api/auth/signup')
+        .send({password: 'password', name: 'name'})
+        .expect(400, { error: { message: 'Invalid submission.' } }
+        )
+    })
+    it('returns 400 if no password is given', () => {
+      return supertest(app)
+        .post('/api/auth/signup')
+        .send({username: 'username', name: 'name'})
+        .expect(400, { error: { message: 'Invalid submission.' } }
+        )
+    })
+    it('returns 400 if no name is given', () => {
+      return supertest(app)
+        .post('/api/auth/signup')
+        .send({password: 'password', username: 'username'})
+        .expect(400, { error: { message: 'Invalid submission.' } }
+        )
+    })
+    context('given users in database', () => {
+      beforeEach('Seed users table', () => {
+        const usersArray = makeUsersArray()
+        return db.insert(usersArray).into('users') 
+      })
+      it('returns 400 if username is already in database', () => {
+        return supertest(app)
+          .post('/api/auth/signup')
+          .send({username: 'tim1', password: 'pasasword', name: 'timothy'})
+          .expect(400, {error: {message: 'Username not available.'}})
+      })
+    })
+
   })
 })
 
