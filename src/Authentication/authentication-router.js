@@ -3,7 +3,7 @@ const jsonParser = express.json();
 const authenticationRouter = express.Router();
 const AuthenticationService = require('./authentication-service');
 const usersService = require('../Users/usersService');
-const bcrpyt = require('bcryptjs');
+const bcrypt = require('bcryptjs');
 
 
 
@@ -22,7 +22,7 @@ authenticationRouter
                 }
                 AuthenticationService.getUserPassword(req.app.get('db'), user.id)
                     .then(db_password => {
-                        let authorized = bcrpyt.compareSync(password, db_password.password);
+                        let authorized = bcrypt.compareSync(password, db_password.password);
                         if(!authorized){
                             return res.status(401).json({error: {message: 'Invalid username/password combination.'}})
                         }
@@ -44,12 +44,15 @@ authenticationRouter
                 if(user){
                     return res.status(400).json({error: {message: 'Username not available.'}})
                 }else{
-                    let user = {name, username, password}
-                    user.password = bcrypt.hash(password, 12);
-                    usersService.insertUser(req.app.get('db'), user)
-                        .then(user => {
-                            return res.status(200).json({authToken: AuthenticationService.createJwt(username, {user_id: user.id})})
-                        })
+                    bcrypt.hash(password, 12)
+                    .then(hash => {
+                        let user = {name, username, password: hash}
+                        usersService.insertUser(req.app.get('db'), user)
+                            .then(user => {
+                                return res.status(200).json({authToken: AuthenticationService.createJwt(username, {user_id: user.id})})
+                            })
+                    })
+
                 }
             })
         .catch(next)

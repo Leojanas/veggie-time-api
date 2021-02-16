@@ -173,6 +173,24 @@ describe('auth endpoints', () => {
         .expect(400, { error: { message: 'Invalid submission.' } }
         )
     })
+    it('returns 200 and jwt and creates user if valid', () => {
+      return supertest(app)
+        .post('/api/auth/signup')
+        .send({password:'testpass', username: 'testuser', name: 'test user'})
+        .expect(200)
+        .then(() => {
+          return supertest(app)
+            .get('/api/users')
+            .expect(200, [
+              {
+                id: 1,
+                name: 'test user',
+                username: 'testuser',
+                password: '$2a$12$NBDfy9n9DJNztg7y4cBBuOcW/H1cXlj2PZe6z7193qZjye1HffzJ.'
+              }
+            ])
+        })
+    })
     context('given users in database', () => {
       beforeEach('Seed users table', () => {
         const usersArray = makeUsersArray()
@@ -187,9 +205,24 @@ describe('auth endpoints', () => {
             return supertest(app)
               .get('/api/users')
               .expect(200, [
-                { username: 'tim1', id: 1 },
-                { username: 'george1', id: 2 },
-                { username: 'mary1', id: 3 }
+                {
+                  id: 1,
+                  name: 'Tim',
+                  username: 'tim1',
+                  password: '$2a$12$9lWnT6TP1UedCEVDfAoqG.4v6uOJKNIaCtro6kjiHO/9F0LZZKUnu'
+                },
+                {
+                  id: 2,
+                  name: 'George',
+                  username: 'george1',
+                  password: '$2a$12$XMAsJaGhkwFelxEENYGz6uq.06anYtGX0URCsVueF/CFvnTf9NyXO'
+                },
+                {
+                  id: 3,
+                  name: 'Mary',
+                  username: 'mary1',
+                  password: '$2a$12$CF/4hO5D9btg7LR3zc57t.5MwKJTmiazNHuoCSfNBdL/U7w5153uq'
+                }
               ])
           })
       })
