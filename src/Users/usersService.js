@@ -19,7 +19,7 @@ const usersService = {
     },
     getUsers(knex){
         return knex('users')
-            .select('username', 'id')
+            .select('*')
     },
     deleteUser(knex, id){
         return knex('users')
