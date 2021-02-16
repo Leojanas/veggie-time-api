@@ -43,14 +43,13 @@ authenticationRouter
             .then(user => {
                 if(user){
                     return res.status(400).json({error: {message: 'Username not available.'}})
+                }else{
+                    let user = {name, username, password}
+                    usersService.insertUser(req.app.get('db'), user)
+                        .then(user => {
+                            return res.status(200).json({authToken: AuthenticationService.createJwt(username, {user_id: user.id})})
+                        })
                 }
-            })
-            .then(() => {
-                let user = {name, username, password}
-                usersService.insertUser(req.app.get('db'), user)
-                    .then(user => {
-                        return res.status(200).json({authToken: AuthenticationService.createJwt(username, {user_id: user.id})})
-                    })
             })
         .catch(next)
     })

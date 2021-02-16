@@ -181,8 +181,17 @@ describe('auth endpoints', () => {
       it('returns 400 if username is already in database', () => {
         return supertest(app)
           .post('/api/auth/signup')
-          .send({username: 'tim1', password: 'pasasword', name: 'timothy'})
+          .send({username: 'tim1', password: 'password', name: 'timothy'})
           .expect(400, {error: {message: 'Username not available.'}})
+          .then(() => {
+            return supertest(app)
+              .get('/api/users')
+              .expect(200, [
+                { username: 'tim1', id: 1 },
+                { username: 'george1', id: 2 },
+                { username: 'mary1', id: 3 }
+              ])
+          })
       })
     })
 
