@@ -24,7 +24,7 @@ authenticationRouter
                     .then(db_password => {
                         let authorized = bcrpyt.compareSync(password, db_password.password);
                         if(!authorized){
-                            return res.status(401).json({error: {message: 'Invalid username/password combination.' + password}})
+                            return res.status(401).json({error: {message: 'Invalid username/password combination.'}})
                         }
                         return res.status(200).json({authToken: AuthenticationService.createJwt(username, {user_id: user.id})})
                     })
@@ -45,6 +45,7 @@ authenticationRouter
                     return res.status(400).json({error: {message: 'Username not available.'}})
                 }else{
                     let user = {name, username, password}
+                    user.password = bcrypt.hash(password, 12);
                     usersService.insertUser(req.app.get('db'), user)
                         .then(user => {
                             return res.status(200).json({authToken: AuthenticationService.createJwt(username, {user_id: user.id})})
