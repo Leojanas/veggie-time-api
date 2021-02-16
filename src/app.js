@@ -8,6 +8,7 @@ const allVeggiesRouter = require('./AllVeggies/all-veggies-router');
 const eventsRouter = require('./Events/events-router');
 const gardenRouter = require('./Garden/garden-router');
 const authenticationRouter = require('./Authentication/authentication-router');
+const usersRouter = require('./Users/users-router');
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use('/api/allVeggies', allVeggiesRouter);
 app.use('/api/events', eventsRouter);
 app.use('/api/garden', gardenRouter);
 app.use('/api/auth', authenticationRouter);
+app.use('/api/users', usersRouter);
 
 
 
