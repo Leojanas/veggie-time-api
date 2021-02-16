@@ -16,6 +16,15 @@ const usersService = {
             .insert(user)
             .into('users')
             .returning('*')
+    },
+    getUsers(knex){
+        return knex('users')
+            .select('username', 'id')
+    },
+    deleteUser(knex, id){
+        return knex('users')
+            .where('id', id)
+            .delete()
     }
 }
 

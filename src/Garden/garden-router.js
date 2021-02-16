@@ -1,7 +1,6 @@
 const express = require('express');
 const gardenRouter = express.Router();
 const gardenService = require('./garden-service');
-const usersService = require('../Users/usersService');
 const {requireAuth} = require('../Middleware/authentication');
 const jsonParser = express.json();
 
