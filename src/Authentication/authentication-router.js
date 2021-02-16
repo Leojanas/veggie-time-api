@@ -24,7 +24,7 @@ authenticationRouter
                     .then(db_password => {
                         let authorized = bcrpyt.compareSync(password, db_password.password);
                         if(!authorized){
-                            return res.status(401).json({error: {message: 'Invalid username/password combination.'}})
+                            return res.status(401).json({error: {message: 'Invalid username/password combination.' + password}})
                         }
                         return res.status(200).json({authToken: AuthenticationService.createJwt(username, {user_id: user.id})})
                     })
