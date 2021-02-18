@@ -9,6 +9,23 @@ const veggiesService = {
             .into('veggies')
             .returning('*')
 
+    },
+    formatVeggies(array){
+        return array.map(veggie => {
+            let formattedVeggie = {};
+            formattedVeggie.id = veggie.id;
+            formattedVeggie.veggie_name = veggie.veggie_name;
+            formattedVeggie.daysUntil = {
+                germination: veggie.germination_days, 
+                thinning: veggie.thinning_days,
+                harvest: veggie.harvest_days
+            };
+            formattedVeggie.spacing = {
+                row: veggie.row_spacing,
+                plant: veggie.plant_spacing
+            }
+            return formattedVeggie;
+        })
     }
 };
 

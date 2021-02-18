@@ -40,20 +40,14 @@ describe('allVeggies endpoints', () => {
             {
               id: 1,
               veggie_name: 'Beets',
-              row_spacing: 16,
-              plant_spacing: 4,
-              germination_days: 8,
-              thinning_days: 15,
-              harvest_days: 60
+              spacing: {row: 16, plant: 4},
+              daysUntil: {germination: 8, thinning: 15, harvest: 60}
             },
             {
               id: 2,
               veggie_name: 'Radishes',
-              row_spacing: 8,
-              plant_spacing: 2,
-              germination_days: 5,
-              thinning_days: 10,
-              harvest_days: 45
+              spacing: {row: 8, plant: 2},
+              daysUntil: {germination: 5, thinning: 10, harvest: 45}
             }
           ]
           )
@@ -65,11 +59,8 @@ describe('allVeggies endpoints', () => {
       return supertest(app)
         .post('/api/allVeggies')
         .send({
-            row_spacing: 8,
-            plant_spacing: 2,
-            germination_days: 5,
-            thinning_days: 10,
-            harvest_days: 45
+            spacing: {row: 8, plant: 2},
+            daysUntil: {germination: 5, thinning: 10, harvest: 45}
         })
         .expect(400, { error: { message: 'At least one required field is missing.' } })
     })
@@ -78,20 +69,14 @@ describe('allVeggies endpoints', () => {
         .post('/api/allVeggies')
         .send({
           veggie_name: 'Radishes',
-          row_spacing: 8,
-          plant_spacing: 2,
-          germination_days: 5,
-          thinning_days: 10,
-          harvest_days: 45
+          spacing: {row: 8, plant: 2},
+          daysUntil: {germination: 5, thinning: 10, harvest: 45}
       })
       .expect(201, {
         id: 1,
         veggie_name: 'Radishes',
-        row_spacing: 8,
-        plant_spacing: 2,
-        germination_days: 5,
-        thinning_days: 10,
-        harvest_days: 45
+        spacing: {row: 8, plant: 2},
+        daysUntil: {germination: 5, thinning: 10, harvest: 45}
     })
       .then(() => {
         return supertest(app)
@@ -99,11 +84,8 @@ describe('allVeggies endpoints', () => {
           .expect(200, [{
               id: 1,
               veggie_name: 'Radishes',
-              row_spacing: 8,
-              plant_spacing: 2,
-              germination_days: 5,
-              thinning_days: 10,
-              harvest_days: 45
+              spacing: {row: 8, plant: 2},
+              daysUntil: {germination: 5, thinning: 10, harvest: 45}
           }])
       })
     })
