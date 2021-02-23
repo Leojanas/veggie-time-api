@@ -13,7 +13,10 @@ gardenRouter
     .get((req,res,next) => {
         let {user_id} = req.payload;
         gardenService.getGarden(req.app.get('db'), user_id)
-            .then(garden => res.status(200).json(garden))
+            .then(garden => {
+                let response = veggiesService.formatVeggies(garden)
+                res.status(200).json(response)
+            })
     })
     .post(jsonParser, (req,res,next) => {
         let {veggie_id, plant_date} = req.body;
