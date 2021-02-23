@@ -1,6 +1,7 @@
 const express = require('express');
 const gardenRouter = express.Router();
 const gardenService = require('./garden-service');
+const veggiesService = require('../AllVeggies/all-veggies-service');
 const {requireAuth} = require('../Middleware/authentication');
 const jsonParser = express.json();
 
@@ -22,7 +23,10 @@ gardenRouter
         }
         let veggie = {veggie_id, user_id, plant_date};
         gardenService.addVeggie(req.app.get('db'), veggie)
-            .then(veggies => res.status(201).json(veggies[0]))
+            .then(veggies => {
+                let response = veggiesService.formatVeggies(veggies)
+                res.status(201).json(response[0])
+            })
     })
 
 gardenRouter
