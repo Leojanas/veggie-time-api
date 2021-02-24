@@ -27,8 +27,11 @@ gardenRouter
         let veggie = {veggie_id, user_id, plant_date};
         gardenService.addVeggie(req.app.get('db'), veggie)
             .then(veggies => {
-                let response = veggiesService.formatVeggies(veggies)
-                res.status(201).json(response[0])
+                return gardenService.getGarden(req.app.get('db'), user_id)
+                    .then(garden => {
+                        let response = veggiesService.formatVeggies(garden)
+                        res.status(201).json(response)
+                    })
             })
     })
 
