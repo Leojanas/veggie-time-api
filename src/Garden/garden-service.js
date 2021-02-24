@@ -17,7 +17,7 @@ const gardenService = {
         return knex
             .insert(veggie)
             .into('garden')
-            .returning('*')
+            .returning('id')
     },
     updateVeggie(knex, id, plant_date){
         return knex('garden')
