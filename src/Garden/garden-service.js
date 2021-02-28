@@ -9,8 +9,9 @@ const gardenService = {
     },
     getVeggieById(knex, id){
         return knex('garden')
-            .select('*')
-            .where('id', id)
+            .join('veggies', 'garden.veggie_id', '=', 'veggies.id')
+            .where('garden.id', id)
+            .select('veggies.veggie_name', 'veggies.germination_days', 'veggies.thinning_days', 'veggies.harvest_days', 'garden.plant_date', 'garden.id', 'veggies.row_spacing', 'veggies.plant_spacing', 'garden.user_id')
             .first()
     },
     addVeggie(knex, veggie){

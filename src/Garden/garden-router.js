@@ -17,6 +17,7 @@ gardenRouter
                 let response = veggiesService.formatVeggies(garden)
                 res.status(200).json(response)
             })
+            .catch(next)
     })
     .post(jsonParser, (req,res,next) => {
         let {veggie_id, plant_date} = req.body;
@@ -27,14 +28,15 @@ gardenRouter
         let veggie = {veggie_id, user_id, plant_date};
         gardenService.addVeggie(req.app.get('db'), veggie)
             .then(id => {
-                return gardenService.getVeggieById(req.app.get('db'), id)
+                return gardenService.getVeggieById(req.app.get('db'), id[0])
                     .then(veggie => {
-                        let veggies;
+                        let veggies =[];
                         veggies.push(veggie);
-                        let response = veggiesService.formatVeggies(veggies)
+                        let response = veggiesService.formatVeggies(veggies);
                         res.status(201).json(response[0])
                     })
             })
+            .catch(next)
     })
 
 gardenRouter

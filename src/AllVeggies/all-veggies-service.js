@@ -23,7 +23,8 @@ const veggiesService = {
             formattedVeggie.spacing = {
                 row: veggie.row_spacing,
                 plant: veggie.plant_spacing
-            }
+            };
+            formattedVeggie.plantDate = veggie.plant_date;
             return formattedVeggie;
         })
     }

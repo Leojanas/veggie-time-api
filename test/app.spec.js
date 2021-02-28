@@ -125,12 +125,10 @@ describe('auth endpoints', () => {
         .expect(401,  { error: { message: 'Invalid username/password combination.' } })
     })
     it('returns 200 and jwt for valid username password combo', () => {
-      let expectedToken = jwt.sign(
-        {user_id: 1}, process.env.JWT_SECRET, {subject: 'tim1', algorithm: 'HS256'});
       return supertest(app)
         .post('/api/auth/login')
         .send({username: 'tim1', password: 'TimPassword'})
-        .expect(200, { authToken: expectedToken })
+        .expect(200)
     })
   })
   describe('POST /api/auth/signup', () => {
@@ -162,15 +160,9 @@ describe('auth endpoints', () => {
         .expect(200)
         .then(() => {
           return supertest(app)
-            .get('/api/users')
-            .expect(200, [
-              {
-                id: 1,
-                name: 'test user',
-                username: 'testuser',
-                password: '$2a$12$NBDfy9n9DJNztg7y4cBBuOcW/H1cXlj2PZe6z7193qZjye1HffzJ.'
-              }
-            ])
+          .post('/api/auth/login')
+          .send({username: 'testuser', password: 'testpass'})
+          .expect(200)
         })
     })
     context('given users in database', () => {
@@ -443,20 +435,18 @@ describe('garden endpoints', () => {
         .set('Authorization', 'Bearer '+ jwtArray[1]) 
         .expect(200, [
           {
+            id: 1,
             veggie_name: 'Beets',
-            germination_days: 8,
-            thinning_days: 15,
-            harvest_days: 60,
-            plant_date: '2021-03-18T06:00:00.000Z',
-            id: 1
+            daysUntil: { germination: 8, thinning: 15, harvest: 60 },
+            spacing: { row: 16, plant: 4 },
+            plantDate: '2021-03-18T06:00:00.000Z'
           },
           {
+            id: 3,
             veggie_name: 'Radishes',
-            germination_days: 5,
-            thinning_days: 10,
-            harvest_days: 45,
-            plant_date: null,
-            id: 3
+            daysUntil: { germination: 5, thinning: 10, harvest: 45 },
+            spacing: { row: 8, plant: 2 },
+            plantDate: null
           }
         ])
     })
@@ -473,9 +463,10 @@ describe('garden endpoints', () => {
         .send({veggie_id: 1, plant_date: '2021-04-12'})
         .expect(201, {
           id: 4,
-          user_id: 2,
-          veggie_id: 1,
-          plant_date: '2021-04-12T06:00:00.000Z'
+          veggie_name: 'Beets',
+          daysUntil: { germination: 8, thinning: 15, harvest: 60 },
+          spacing: { row: 16, plant: 4 },
+          plantDate: '2021-04-12T06:00:00.000Z'
         })
     })
   })
@@ -504,20 +495,18 @@ describe('garden endpoints', () => {
               .set('Authorization', 'Bearer '+ jwtArray[1]) 
               .expect(200, [
                 {
+                  id: 1,
                   veggie_name: 'Beets',
-                  germination_days: 8,
-                  thinning_days: 15,
-                  harvest_days: 60,
-                  plant_date: '2021-03-18T06:00:00.000Z',
-                  id: 1
+                  daysUntil: { germination: 8, thinning: 15, harvest: 60 },
+                  spacing: { row: 16, plant: 4 },
+                  plantDate: '2021-03-18T06:00:00.000Z'
                 },
                 {
+                  id: 3,
                   veggie_name: 'Radishes',
-                  germination_days: 5,
-                  thinning_days: 10,
-                  harvest_days: 45,
-                  plant_date: '2021-03-21T06:00:00.000Z',
-                  id: 3
+                  daysUntil: { germination: 5, thinning: 10, harvest: 45 },
+                  spacing: { row: 8, plant: 2 },
+                  plantDate: '2021-03-21T06:00:00.000Z'
                 }
               ])
           })
@@ -541,12 +530,11 @@ describe('garden endpoints', () => {
               .set('Authorization', 'Bearer '+ jwtArray[1]) 
               .expect(200, [
                 {
+                  id: 1,
                   veggie_name: 'Beets',
-                  germination_days: 8,
-                  thinning_days: 15,
-                  harvest_days: 60,
-                  plant_date: '2021-03-18T06:00:00.000Z',
-                  id: 1
+                  daysUntil: { germination: 8, thinning: 15, harvest: 60 },
+                  spacing: { row: 16, plant: 4 },
+                  plantDate: '2021-03-18T06:00:00.000Z'
                 }
               ])
           })
