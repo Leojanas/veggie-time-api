@@ -157,7 +157,7 @@ describe('auth endpoints', () => {
       return supertest(app)
         .post('/api/auth/signup')
         .send({password:'testpass', username: 'testuser', name: 'test user'})
-        .expect(200)
+        .expect(201)
         .then(() => {
           return supertest(app)
           .post('/api/auth/login')

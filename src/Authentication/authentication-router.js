@@ -49,7 +49,7 @@ authenticationRouter
                         let user = {name, username, password: hash}
                         usersService.insertUser(req.app.get('db'), user)
                             .then(user => {
-                                return res.status(200).json({authToken: AuthenticationService.createJwt(username, {user_id: user.id})})
+                                return res.status(201).end()
                             })
                     })
 
