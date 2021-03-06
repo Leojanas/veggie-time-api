@@ -1,26 +1,19 @@
-# Express Boilerplate!
+# Veggie Time API
 
-This is a boilerplate project used for starting new projects!
+This is the repository for the Server, API, and Database used with the Veggie Time app. It was developed as a full stack capstone for the Bloc Web Developer Course.
 
-## Set up
+The live app can be viewed at [Veggie Time](https://veggie-time.vercel.app/). The repo for the front end client is at [Veggie Time Client Repo](https://github.com/Leojanas/veggie-time).
 
-Complete the following steps to start a new project (NEW-PROJECT-NAME):
+This was built with Node.js, Express.js, and PostgreSQL.
 
-1. Clone this repository to your local machine `git clone BOILERPLATE-URL NEW-PROJECTS-NAME`
-2. `cd` into the cloned repository
-3. Make a fresh start of the git history for this project with `rm -rf .git && git init`
-4. Install the node dependencies `npm install`
-5. Move the example Environment file to `.env` that will be ignored by git and read by the express server `mv example.env .env`
-6. Edit the contents of the `package.json` to use NEW-PROJECT-NAME instead of `"name": "express-boilerplate",`
+## Summary
 
-## Scripts
+This app assists user with scheduling and tracking activity in a vegetable garden.  The user can create an account to create their own personal garden.  They can then select the
+veggies that they want to grow, and the app gives information on plant spacing and time to germination and harvest.  The user can then select their planting date, and the app uses that to generate estimated dates for germination, thinning, and harvesting.  The user can also manually add events to their timeline to track tasks such as watering and weeding the garden.
 
-Start the application `npm start`
+## API Documentation
 
-Start nodemon for the application `npm run dev`
+The deployed API is at [Live Server]('https://young-reef-18206.herokuapp.com').
 
-Run the tests `npm test`
+### /api/auth/signup
 
-## Deploying
-
-When your new project is ready for deployment, add a new Heroku application with `heroku create`. This will make a new git remote called "heroku" and you can then `npm run deploy` which will push to this remote's master branch.
