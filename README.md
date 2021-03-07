@@ -17,3 +17,54 @@ The deployed API is at [Live Server]('https://young-reef-18206.herokuapp.com').
 
 ### /api/auth/signup
 
+This endpoint supports POST requests.
+
+POST requests need a body object.
+
+### /api/auth/login
+
+This endpoint supports POST requests.
+
+Post requests need a body object and return a JWT.
+
+### /api/allVeggies
+
+This endpoint supports GET and POST requests.
+
+GET requests need no body and will return an array of all veggies in the database.
+
+POST requests need a body object to add a new veggie to the database.
+
+### /api/events
+
+This endpoint supports GET and POST requests.
+
+GET requests need no body and will return an array of event objects.
+
+POST requests neesd a body object.
+
+### /api/events/:id
+
+This endpoint supports GET,PATCH, and DELETE requests.
+
+GET requests need no body and will return an object containing info on a single event.
+
+PATCH requests need a body object.
+
+DELETE requests need no body.
+
+### /api/garden
+
+This endpoint supports GET and POST requests.
+
+GET requests need no body and will return an array of event objects.
+
+POST requests neesd a body object.
+
+### /api/garden/:id
+
+This endpoint supports PATCH and DELETE requests.
+
+PATCH requests need a body object.
+
+DELETE requests need no body.
